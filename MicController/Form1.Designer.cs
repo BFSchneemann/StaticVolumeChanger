@@ -33,10 +33,11 @@
             this.lblCurrVolume = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtVolume = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.lblChangeCounter = new System.Windows.Forms.Label();
+            this.numeric01 = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.numeric01)).BeginInit();
             this.SuspendLayout();
             // 
             // lblDeviceName
@@ -79,17 +80,6 @@
             this.label1.TabIndex = 5;
             this.label1.Text = "aktueller Wert:";
             // 
-            // txtVolume
-            // 
-            this.txtVolume.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtVolume.Location = new System.Drawing.Point(286, 105);
-            this.txtVolume.MaxLength = 3;
-            this.txtVolume.Name = "txtVolume";
-            this.txtVolume.Size = new System.Drawing.Size(100, 21);
-            this.txtVolume.TabIndex = 6;
-            this.txtVolume.Text = "0.8";
-            this.txtVolume.TextChanged += new System.EventHandler(this.TxtVolume_TextChanged);
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -120,15 +110,34 @@
             this.lblChangeCounter.TabIndex = 9;
             this.lblChangeCounter.Text = "...";
             // 
+            // numeric01
+            // 
+            this.numeric01.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.numeric01.Location = new System.Drawing.Point(286, 106);
+            this.numeric01.Name = "numeric01";
+            this.numeric01.ReadOnly = true;
+            this.numeric01.Size = new System.Drawing.Size(120, 20);
+            this.numeric01.TabIndex = 10;
+            this.numeric01.Value = new decimal(new int[] {
+            80,
+            0,
+            0,
+            0});
+            this.numeric01.ValueChanged += new System.EventHandler(this.numeric01_ValueChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(475, 190);
+            this.Controls.Add(this.numeric01);
             this.Controls.Add(this.lblChangeCounter);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.txtVolume);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.lblCurrVolume);
@@ -140,6 +149,7 @@
             this.Text = "Microphone Controller";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
+            ((System.ComponentModel.ISupportInitialize)(this.numeric01)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -150,10 +160,10 @@
         private System.Windows.Forms.Label lblCurrVolume;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtVolume;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lblChangeCounter;
+        private System.Windows.Forms.NumericUpDown numeric01;
     }
 }
 

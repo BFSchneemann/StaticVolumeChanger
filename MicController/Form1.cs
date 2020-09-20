@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using NAudio.CoreAudioApi;
+using System.IO;
 
 namespace MicController
 {
@@ -11,6 +12,7 @@ namespace MicController
         private static System.Timers.Timer timer;
         private Int32 globalChangeCounter = 0;
         private static NotifyIcon notifyIcon;
+        private readonly String configFilename = "volume.txt";
 
         public Form1()
         {
@@ -67,6 +69,20 @@ namespace MicController
             notifyIcon.DoubleClick += new EventHandler(Show_Window);
         }
 
+        private void SaveSettings()
+        {
+            String defaultConfigFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "MicController";
+            string absolutePath = defaultConfigFolder + Path.DirectorySeparatorChar + configFilename;
+
+            if (!Directory.Exists(defaultConfigFolder))
+            {
+                Directory.CreateDirectory(defaultConfigFolder);
+            }
+
+            File.WriteAllText(absolutePath, numeric01.Text);
+
+        }
+
         private void Show_Window(object sender, System.EventArgs e)
         {
             this.WindowState = FormWindowState.Normal;
@@ -99,7 +115,13 @@ namespace MicController
         private void Manipulate_Timer()
         {
             float oldVol = defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar;
-            float newVol = float.Parse(txtVolume.Text, System.Globalization.CultureInfo.InvariantCulture);
+            float newVol = oldVol;
+            float temp = 0;
+
+            if (float.TryParse(numeric01.Text, out temp))
+            {
+                newVol = temp/100;
+            }
 
             lblCurrVolume.Text = oldVol.ToString();
 
@@ -112,17 +134,18 @@ namespace MicController
             }
         }
 
-        private void TxtVolume_TextChanged(object sender, EventArgs e)
-        {
-            globalChangeCounter = -1;
-        }
-
         private void Form1_Resize(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Minimized)
             {
                 this.ShowInTaskbar = false;
             }
+        }
+
+        private void numeric01_ValueChanged(object sender, EventArgs e)
+        {
+            globalChangeCounter = -1;
+            SaveSettings();
         }
     }
 }
