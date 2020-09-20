@@ -9,10 +9,11 @@ namespace MicController
     public partial class Form1 : Form
     {
         private MMDevice defaultDevice;
-        private static System.Timers.Timer timer;
+        private static System.Timers.Timer timerCheck, timerSave;
         private Int32 globalChangeCounter = 0;
         private static NotifyIcon notifyIcon;
         private readonly String configFilename = "volume.txt";
+        private readonly String configFolder = "MicController";
 
         public Form1()
         {
@@ -32,12 +33,18 @@ namespace MicController
             lblDeviceName.Text = defaultDevice.FriendlyName;
             lblCurrVolume.Text = defaultDevice.AudioEndpointVolume.MasterVolumeLevel.ToString();
 
-            timer = new System.Timers.Timer(50);
-            timer.AutoReset = true;
-            timer.Elapsed += Timer_Elapsed;
-            timer.Start();
+            timerCheck = new System.Timers.Timer(50);
+            timerCheck.AutoReset = true;
+            timerCheck.Elapsed += Timer_Check_Elapsed;
+            timerCheck.Start();
+
+            timerSave = new System.Timers.Timer(5000);
+            timerSave.AutoReset = false;
+            timerSave.Elapsed += Timer_Save_Elapsed;
 
             this.WindowState = FormWindowState.Minimized;
+
+            LoadSettings();
         }
 
         private void Create_KontextMenu()
@@ -71,7 +78,7 @@ namespace MicController
 
         private void SaveSettings()
         {
-            String defaultConfigFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "MicController";
+            String defaultConfigFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + configFolder;
             string absolutePath = defaultConfigFolder + Path.DirectorySeparatorChar + configFilename;
 
             if (!Directory.Exists(defaultConfigFolder))
@@ -80,7 +87,17 @@ namespace MicController
             }
 
             File.WriteAllText(absolutePath, numeric01.Text);
+        }
 
+        private void LoadSettings()
+        {
+            String defaultConfigFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + configFolder;
+            string absolutePath = defaultConfigFolder + Path.DirectorySeparatorChar + configFilename;
+
+            if (File.Exists(absolutePath))
+            {
+                numeric01.Value = Convert.ToInt32(File.ReadAllText(absolutePath));
+            }
         }
 
         private void Show_Window(object sender, System.EventArgs e)
@@ -95,26 +112,34 @@ namespace MicController
             Application.Exit();
         }
 
-        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void Timer_Check_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (lblCurrVolume.InvokeRequired)
             {
                 lblCurrVolume.Invoke((MethodInvoker)delegate ()
                 {
-                    Manipulate_Timer();
+                    Manipulate_Volume();
                 }
                 );
             }
             else
             {
-                Manipulate_Timer();
+                Manipulate_Volume();
             }
             
         }
 
-        private void Manipulate_Timer()
+        private void Timer_Save_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            timerSave.Stop();
+            SaveSettings();
+        }
+
+        private void Manipulate_Volume()
         {
             float oldVol = defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar;
+            lblCurrVolume.Text = oldVol.ToString();
+
             float newVol = oldVol;
             float temp = 0;
 
@@ -122,8 +147,6 @@ namespace MicController
             {
                 newVol = temp/100;
             }
-
-            lblCurrVolume.Text = oldVol.ToString();
 
             defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = newVol;
 
@@ -142,10 +165,13 @@ namespace MicController
             }
         }
 
-        private void numeric01_ValueChanged(object sender, EventArgs e)
+        private void Numeric01_ValueChanged(object sender, EventArgs e)
         {
             globalChangeCounter = -1;
-            SaveSettings();
+            timerSave.Stop();
+            timerSave.Start();
         }
+
+        
     }
 }

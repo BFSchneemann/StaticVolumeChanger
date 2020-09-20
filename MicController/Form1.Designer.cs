@@ -127,7 +127,7 @@
             0,
             0,
             0});
-            this.numeric01.ValueChanged += new System.EventHandler(this.numeric01_ValueChanged);
+            this.numeric01.ValueChanged += new System.EventHandler(this.Numeric01_ValueChanged);
             // 
             // Form1
             // 
